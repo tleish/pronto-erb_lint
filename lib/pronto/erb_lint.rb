@@ -82,7 +82,17 @@ module Pronto
     def valid_patch?(patch)
       return false if patch.additions < 1
       path = patch.new_file_full_path
-      erb_file?(path)
+      erb_file?(path) && !excluded?(path)
+    end
+
+    def erb_file?(path)
+      File.extname(path) == '.erb'
+    end
+
+    def excluded?(filename)
+      @config.global_exclude.any? do |path|
+        File.fnmatch?(path, filename)
+      end
     end
 
     def inspect(patch)
@@ -91,7 +101,7 @@ module Pronto
       offences = @inspector.offenses
       offences.map do |offence|
         patch.added_lines
-          .select { |line| offence.line_range.include? line.new_lineno }# line.new_lineno == offence.line
+          .select { |line| offence.line_range.include? line.new_lineno }
           .map { |line| new_message(offence, line) }
       end
     end
@@ -99,17 +109,12 @@ module Pronto
     def new_message(offence, line)
       path = line.patch.delta.new_file[:path]
       level = :error
-
       Message.new(path, line, level, offence.message, nil, self.class)
-    end
-
-    def erb_file?(path)
-      File.extname(path) == '.erb'
     end
 
     def processed_source_for(patch)
       path = patch.new_file_full_path.to_s
-      file_content = File.read(path, encoding: "ISO8859-1:utf-8")
+      file_content = File.read(path, encoding: 'ISO8859-1:utf-8')
       ::ERBLint::ProcessedSource.new(path, file_content)
     end
   end
