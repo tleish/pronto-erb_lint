@@ -109,7 +109,7 @@ module Pronto
 
     def processed_source_for(patch)
       path = patch.new_file_full_path.to_s
-      file_content = File.read(path)
+      file_content = File.read(path, encoding: "ISO8859-1:utf-8")
       ::ERBLint::ProcessedSource.new(path, file_content)
     end
   end
