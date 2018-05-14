@@ -11,7 +11,6 @@ module Pronto
       super
       @options = {}
       load_config
-      @inspector = ::ERBLint::Runner.new(file_loader, @config)
     end
 
     def run
@@ -96,10 +95,9 @@ module Pronto
     end
 
     def inspect(patch)
-      processed_source = processed_source_for(patch)
-      @inspector.run(processed_source)
-      offences = @inspector.offenses
-      offences.map do |offence|
+      inspector = ::ERBLint::Runner.new(file_loader, @config)
+      inspector.run(processed_source_for(patch))
+      inspector.offenses.map do |offence|
         patch.added_lines
           .select { |line| offence.line_range.include? line.new_lineno }
           .map { |line| new_message(offence, line) }
