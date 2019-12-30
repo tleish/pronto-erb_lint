@@ -26,7 +26,7 @@ module Pronto
         config = ::ERBLint::RunnerConfig.new(file_loader.yaml(config_filename))
         @config = ::ERBLint::RunnerConfig.default.merge(config)
       else
-        warn "#{config_filename} not found: using default config".yellow
+        warn "#{config_filename} not found: using default config"
         @config = RunnerConfig.default
       end
       @config.merge!(runner_config_override)
