@@ -27,7 +27,7 @@ module Pronto
         @config = ::ERBLint::RunnerConfig.default.merge(config)
       else
         warn "#{config_filename} not found: using default config"
-        @config = RunnerConfig.default
+        @config = ::ERBLint::RunnerConfig.default
       end
       @config.merge!(runner_config_override)
     rescue Psych::SyntaxError => e
